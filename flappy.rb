@@ -1,95 +1,22 @@
 require 'gosu'
 require './lib/player'
 require './lib/ground'
-require './lib/wall'
-require './lib/wallfactory'
+require './lib/gate'
 
 class GameWindow < Gosu::Window
 
-  attr_accessor :entities, :walls, :delta
+  attr_accessor :entities, :walls, :delta_time
 
   # Initialize the game
   def initialize
     super(288, 512, false)
-    self.caption = "GosuFlappy Game"
-    @start = false
-    @delta = 0
-    @last_time = 0
-    @background_image = Gosu::Image.new(self, "media/background.png", true)
-    @message_image = Gosu::Image.new(self, "media/message.png", true)
-    @ground = Ground.new(self)
-    @player = Player.new(self)
-    @wallfactory = WallFactory.new(self)
-    @score = 0
-    @font = Gosu::Font.new(self, 'Courier', 40)
-    @entities = [
-      @ground,
-      @player
-    ]
+    self.caption = "FlappyBirdAI"
+    @game_on = false
+    reset
   end
 
-  # Reset all elements
-  def reset
-    @delta = 0
-    @last_time = 0
-    @player = Player.new(self)
-    @wallfactory = WallFactory.new(self)
-    @score = 0
-    @walls = []
-    @entities = [
-      @ground,
-      @player,
-      @wallfactory
-    ]
-  end
-
-  # Update delta param
-  def update_delta
-    current_time = Gosu::milliseconds / 1000.0
-    @delta = [current_time - @last_time, 0.25].min
-    @last_time = current_time
-  end
-
-  # Update game for each loop occurence - standard gosu method
-  def update
-    if @start
-      update_delta
-      if @player.dead
-        @player.update
-        @start = false if @player.killed?
-      else
-        @entities.each do |e|
-          e.update
-        end
-      end
-      @walls.each do |wall|
-        @player.dead = true if @player.collision? wall
-        @score += 0.5 if wall.score? @player
-      end
-      @walls.reject! {|wall| !wall.active }
-    else
-      if self.button_down?(Gosu::KbSpace)
-        @start = true
-        reset
-      end
-    end
-  end
-
-  # Draw entities of games - standard gosu method
-  def draw
-    @background_image.draw(0, 0, 0)
-    @message_image.draw(width/2 - @message_image.width/2, 50, 10) if !@start
-    # draw the score
-    @font.draw("#{@score.to_i}", 10, 10, 20)
-    @entities.each do |e|
-      e.draw
-    end
-  end
-
-  # Compute height of sky
-  # @return [integer] the height of sky
-  def sky_height
-    @background_image.height - self.ground_height
+  def font
+    @font ||= Gosu::Font.new(self, 'Courier', 40)
   end
 
   # Return the height of ground
@@ -98,10 +25,72 @@ class GameWindow < Gosu::Window
     @ground.height
   end
 
-  # Return ground y position
-  # @return [integer]
-  def ground_y
-    @ground.y
+  private
+
+  # Reset all elements
+  def reset
+    @delta_time = 0
+    @last_time = 0
+    @score = 0
+    @ground = Ground.new(self)
+    @player = Player.new(self)
+    @gates = []
+  end
+
+  # Update game for each loop occurence - standard gosu method
+  def update
+    if @game_on
+      move_game(2)
+    else
+      start_game_if_space_pressed
+    end
+  end
+
+  def move_game(distance)
+    update_delta_time
+    @gates << Gate.new(self) if @gates.empty?
+    @gates.each { |gate| gate.move_by(distance) }
+    @ground.move_by(distance)
+    @player.move_by(distance)
+
+    @game_on = !@player.dead
+  end
+
+  def update_delta_time
+    current_time = Gosu::milliseconds / 1000.0
+    @delta_time = [current_time - @last_time, 0.25].min
+    @last_time = current_time
+  end
+
+  def start_game_if_space_pressed
+    if self.button_down?(Gosu::KbSpace)
+      reset
+      @game_on = true
+    end
+  end
+
+  def draw
+    background_image.draw(0, 0, 0)
+    message_image.draw(width/2 - message_image.width/2, 50, 10) unless @game_on
+    # draw the score
+    font.draw(@score, 10, 10, 20)
+    @ground.draw
+    @gates.each { |wall| wall.draw }
+    @player.draw
+  end
+
+  # Compute height of sky
+  # @return [integer] the height of sky
+  def sky_height
+    background_image.height - self.ground_height
+  end
+
+  def background_image
+    @background_image ||= Gosu::Image.new(self, "media/background.png", true)
+  end
+
+  def message_image
+    @message_image ||= Gosu::Image.new(self, "media/message.png", true)
   end
 end
 
