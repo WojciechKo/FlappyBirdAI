@@ -15,40 +15,33 @@ class GameWindow < Gosu::Window
     reset
   end
 
+  def reset
+    @delta_time = 0
+    @last_time = 0
+    @score = 0
+    @ground = Background.new(self)
+    @player = Bird.new(self)
+    @gates = []
+  end
+
   def font
     @font ||= Gosu::Font.new(self, 'Courier', 40)
   end
 
-  # Return the height of ground
-  # @return [integer]
   def ground_height
     @ground.height
   end
 
   private
 
-  # Reset all elements
-  def reset
-    @delta_time = 0
-    @last_time = 0
-    @score = 0
-    @ground = Ground.new(self)
-    @player = Player.new(self)
-    @gates = []
-  end
-
   # Update game for each loop occurence - standard gosu method
   def update
-    if @game_on
-      move_game(2)
-    else
-      start_game_if_space_pressed
-    end
+    @game_on ? move_game(2) : start_game_if_space_pressed
   end
 
   def move_game(distance)
     update_delta_time
-    @gates << Gate.new(self) if @gates.empty?
+    manage_gates
     @gates.each { |gate| gate.move_by(distance) }
     @ground.move_by(distance)
     @player.move_by(distance)
@@ -60,6 +53,23 @@ class GameWindow < Gosu::Window
     current_time = Gosu::milliseconds / 1000.0
     @delta_time = [current_time - @last_time, 0.25].min
     @last_time = current_time
+  end
+
+  def manage_gates
+    delete_gate_if_needed
+    create_gate_if_needed
+  end
+
+  def delete_gate_if_need
+    # code here
+  end
+
+  def create_gate_if_needed
+    if @gates.empty? || @gates.first.x
+      gate = Gate.new(self)
+    end
+
+    @gates << gate if gate
   end
 
   def start_game_if_space_pressed
@@ -79,8 +89,6 @@ class GameWindow < Gosu::Window
     @player.draw
   end
 
-  # Compute height of sky
-  # @return [integer] the height of sky
   def sky_height
     background_image.height - self.ground_height
   end

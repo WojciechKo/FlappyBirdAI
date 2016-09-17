@@ -1,6 +1,6 @@
 require 'byebug'
 
-class Player
+class Bird
   attr_accessor :player_x, :player_y, :dead
 
   def draw
@@ -8,7 +8,8 @@ class Player
   end
 
   def move_by(distance)
-    @dead = (@player_y >= ground_y - player_image.height/2)
+    @dead = (@player_y + player_image.height/2 >= ground_y)
+
     @dead ? bird_fall : bird_fly
   end
 
