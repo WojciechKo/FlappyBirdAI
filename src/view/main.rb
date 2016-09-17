@@ -1,6 +1,7 @@
 require 'gosu'
 
 require_relative 'background'
+require_relative 'ground'
 require_relative 'gates'
 require_relative 'bird'
 
@@ -19,12 +20,17 @@ module View
 
     def draw
       background.draw
+      ground.draw
       gates.draw(flappy_bird.gates)
       bird.draw(flappy_bird.bird)
     end
 
     def background
-      @background ||= Background.new(self)
+      @background ||= Background.new
+    end
+
+    def ground
+      @ground ||= Ground.new(self)
     end
 
     def gates
@@ -39,6 +45,11 @@ module View
       modify_game_state(update_interval / 100.0)
     end
 
+    def ground_y
+      height - ground.height
+    end
+
+    private
     def modify_game_state(delta_time)
       if @game_on
         flappy_bird.jump if space_pressed?

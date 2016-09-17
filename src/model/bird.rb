@@ -6,12 +6,12 @@ class Bird
 
   def move(time)
     delta_speed = GRAVITY * time
-    self.altitude = altitude + (@y_speed * time) - (delta_speed * time) *2
+    self.altitude = altitude + (@y_speed * time) + (delta_speed * time) * 2
     @y_speed = @y_speed + delta_speed
   end
 
   def jump
-    @y_speed = -25
+    @y_speed = 25
   end
 
   def width_range
@@ -28,5 +28,5 @@ class Bird
 
   HEIGHT = 20
   WIDTH = 20
-  GRAVITY = 13
+  GRAVITY = -13
 end
