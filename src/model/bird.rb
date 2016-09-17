@@ -11,9 +11,6 @@ class Bird
     @y_speed = @y_speed + delta_speed
   end
 
-  def draw
-  end
-
   def width_range
     (0..WIDTH)
   end
@@ -34,23 +31,5 @@ class Bird
   def initialize(altitude: 100)
     @altitude = altitude
     @y_speed = 0
-  end
-
-  class Renderer
-    def draw(bird)
-      images.first.draw_rot(@window.width / 4, bird.altitude + Bird::HEIGHT/2, 1, 0)
-    end
-
-    private
-
-    def initialize(window)
-      @window = window
-    end
-
-    def images
-      @images ||= ['media/flappy-1.png', 'media/flappy-2.png', 'media/flappy-3.png'].map do |path|
-        Gosu::Image.new(path)
-      end
-    end
   end
 end

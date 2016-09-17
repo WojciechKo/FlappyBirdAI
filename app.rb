@@ -1,3 +1,3 @@
-require_relative 'lib/flappy_bird'
+require_relative 'src/view/main'
 
-FlappyBird::Renderer.new.show
+View::Main.new.show
