@@ -4,16 +4,6 @@ require_relative 'bird'
 require_relative 'gates'
 
 class FlappyBird
-  def jump
-    bird.jump
-  end
-
-  def move(time)
-    @bird.move(time)
-    @gates.move(time)
-    !dead?
-  end
-
   def initialize
     init
   end
@@ -21,6 +11,16 @@ class FlappyBird
   def init
     @bird = Bird.new
     @gates = Gates.new
+  end
+
+  def move(time)
+    bird.move(time)
+    gates.move(time)
+    !dead?
+  end
+
+  def jump
+    bird.jump
   end
 
   attr_reader :bird, :gates

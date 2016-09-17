@@ -1,8 +1,8 @@
 require 'gosu'
 
 require_relative 'background'
+require_relative 'gates'
 require_relative 'bird'
-# require_relative 'gates'
 
 require_relative '../../src/model/flappy_bird'
 
@@ -13,14 +13,13 @@ module View
     def initialize(flappy_bird: FlappyBird.new)
       super(288, 512, false)
       self.caption = "FlappyBirdAI"
-      @time = 0
 
       @flappy_bird = flappy_bird
     end
 
     def draw
       background.draw
-      # gates.draw(flappy_bird.gates)
+      gates.draw(flappy_bird.gates)
       bird.draw(flappy_bird.bird)
     end
 
@@ -46,6 +45,7 @@ module View
         @game_on = flappy_bird.move(delta_time)
       elsif space_pressed?
         flappy_bird.init
+        flappy_bird.jump
         @game_on = true
       end
     end
