@@ -11,11 +11,11 @@ module View
   class Main < Gosu::Window
     attr_accessor :flappy_bird
 
-    def initialize(flappy_bird: FlappyBird.new)
+    def initialize
       super(288, 512, false)
-      self.caption = "FlappyBirdAI"
+      self.caption = 'FlappyBirdAI'
 
-      @flappy_bird = flappy_bird
+      @flappy_bird = FlappyBird.new(game_height)
     end
 
     def draw
@@ -42,11 +42,15 @@ module View
     end
 
     def update
-      modify_game_state(update_interval / 100.0)
+      modify_game_state(update_interval.to_i)
     end
 
-    def ground_y
+    def game_height
       height - ground.height
+    end
+
+    def bird_start
+      width / 4
     end
 
     private

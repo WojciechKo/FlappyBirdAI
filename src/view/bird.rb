@@ -5,10 +5,14 @@ module View
     end
 
     def draw(bird)
-      image.draw_rot(window.width / 4,
+      image.draw_rot(window.bird_start + image.width / 2,
                      y_cord(bird),
                      1,
                      0)
+    end
+
+    def width
+      image.width
     end
 
     private
@@ -20,7 +24,7 @@ module View
     end
 
     def y_cord(bird)
-      window.ground_y - images.first.height/2 - bird.altitude
+      window.game_height - images.first.height/2 - bird.altitude
     end
 
     def images

@@ -11,7 +11,7 @@ class Bird
   end
 
   def jump
-    @y_speed = 25
+    @y_speed = 0.5
   end
 
   def width_range
@@ -26,7 +26,7 @@ class Bird
 
   private
 
-  HEIGHT = 20
-  WIDTH = 20
-  GRAVITY = -13
+  HEIGHT = 24
+  WIDTH = 34
+  GRAVITY = -0.002
 end
