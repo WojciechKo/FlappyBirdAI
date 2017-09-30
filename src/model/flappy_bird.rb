@@ -4,6 +4,9 @@ require_relative 'bird'
 require_relative 'gates'
 
 class FlappyBird
+
+  attr_reader :score
+
   def initialize(height)
     @height = height
     init
@@ -11,10 +14,12 @@ class FlappyBird
 
   def init
     @bird = Bird.new
-    @gates = Gates.new(height, 30)
+    @gates = Gates.new(height)
+    @score = 0
   end
 
   def move(time)
+    @score = @score + time
     bird.move(time)
     gates.move(time)
     !dead?
@@ -24,13 +29,13 @@ class FlappyBird
     bird.jump
   end
 
-  attr_reader :bird, :gates, :height
-
-  private
-
   def dead?
     hit_ground? || hit_gate?
   end
+
+  attr_reader :bird, :gates, :height
+
+  private
 
   def hit_ground?
     bird.altitude <= 0
@@ -38,7 +43,7 @@ class FlappyBird
 
   def hit_gate?
     gates.to_a
-      .select { |gate| gate.width_range.overlaps?(bird.width_range) }.tap { |g| print_gates(g) }
+      .select { |gate| gate.width_range.overlaps?(bird.width_range) }
       .any? { |gate| !contains?(gate.pass_range, bird.height_range) }
   end
 

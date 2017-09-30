@@ -2,10 +2,10 @@ require 'byebug'
 class Gates
   GATE_SPAN = 200
 
-  def initialize(height, gate_width)
+  def initialize(height)
     @height = height
-    @gate_width = gate_width
-    @gates = [Gate.new(height, gate_width, GATE_SPAN)]
+    @rand = Random.new#(123)
+    @gates = [Gate.new(height, GATE_SPAN, @rand)]
   end
 
   def move(time)
@@ -21,7 +21,7 @@ class Gates
   end
 
   private
-  attr_reader :height, :gate_width
+  attr_reader :height
 
   def delete_gate
     @gates.shift if @gates.first.x < -GATE_SPAN
@@ -29,24 +29,25 @@ class Gates
 
   def create_gate
     if @gates.last.x < GATE_SPAN
-      @gates << Gate.new(height, gate_width, @gates.last.x + GATE_SPAN)
+      @gates << Gate.new(height, @gates.last.x + GATE_SPAN, @rand)
     end
   end
 end
 
 class Gate
+  WIDTH = 52
+
   GATE_SIZE = 100
   OFFSET_Y = 50
 
   attr_accessor :x
 
-  def initialize(height, width, distance)
+  def initialize(height, distance, rand)
     @height = height
-    @width = width
     @x = distance
 
     max = height - offset - GATE_SIZE
-    @bottom_of_gate = Random.new.rand(offset..max)
+    @bottom_of_gate = rand.rand(offset..max)
   end
 
   def move(time)
@@ -55,11 +56,11 @@ class Gate
   end
 
   def width_range
-    (x..x + @width)
+    (x...x + WIDTH)
   end
 
   def pass_range
-    (@bottom_of_gate..@bottom_of_gate + GATE_SIZE)
+    (@bottom_of_gate...@bottom_of_gate + GATE_SIZE)
   end
 
   private
